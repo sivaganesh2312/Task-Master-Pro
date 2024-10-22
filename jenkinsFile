@@ -49,6 +49,14 @@ pipeline {
             }
         }
 
+        stage('Deploy & Publish artifacts to Nexus') {      // Give the maven release and maven snapshots in pom.xml file && Configure in jenkins (managed files) => this is connectivity to nexus and jenkins
+            steps {
+                withMaven(globalMavenSettingsConfig: 'settings', jdk: 'JDK-17', maven: 'maven3', mavenSettingsConfig: '', traceability: true) {
+                sh 'mvn deploy -DskipTests=true'
+                }
+            }
+        }
+
         stage('Build & Tag Docker Image') {
             steps {
                script {
@@ -76,14 +84,14 @@ pipeline {
         }
         stage('Deploy to kubernetes') {
             steps {
-               withKubeConfig(caCertificate: '', clusterName: 'kubernetes', contextName: '', credentialsId: 'k8-cred', namespace: 'webapps', restrictKubeConfigAccess: false, serverUrl: 'https://10.138.0.4:6443') {
+               withKubeConfig(caCertificate: '', clusterName: 'kubernetes', contextName: '', credentialsId: 'k8-cred', namespace: 'webapps', restrictKubeConfigAccess: false, serverUrl: 'https://10.138.0.7:6443') {
                         sh "kubectl apply -f deployment-service.yaml "
                } 
             }
         }
         stage('Verify the Deployment') {
             steps {
-               withKubeConfig(caCertificate: '', clusterName: 'kubernetes', contextName: '', credentialsId: 'k8-cred', namespace: 'webapps', restrictKubeConfigAccess: false, serverUrl: 'https://10.138.0.4:6443') {
+               withKubeConfig(caCertificate: '', clusterName: 'kubernetes', contextName: '', credentialsId: 'k8-cred', namespace: 'webapps', restrictKubeConfigAccess: false, serverUrl: 'https://10.138.0.7:6443') {
                         sh "kubectl get pods -n webapps"
                         sh "kubectl get svc -n webapps"
                 }
