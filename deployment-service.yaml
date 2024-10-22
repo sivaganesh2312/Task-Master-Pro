@@ -1,20 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment # Kubernetes resource kind we are creating
 metadata:
-  name: boardgame-deployment
+  name: taskmanager-deployment
 spec:
   selector:
     matchLabels:
-      app: boardgame
+      app: taskmanager
   replicas: 2 # Number of replicas that will be created for this deployment
   template:
     metadata:
       labels:
-        app: boardgame
+        app: taskmanager
     spec:
       containers:
-        - name: boardgame
-          image: ganesh231/boardgame:52 # Image that will be used to containers in the cluster
+        - name: taskmanager
+          image: ganesh231/taskmanager:latest # Image that will be used to containers in the cluster
           imagePullPolicy: Always
           ports:
             - containerPort: 8080 # The port that the container is running on in the cluster
@@ -28,7 +28,7 @@ metadata: # Metadata of the resource kind we are creating
   name: boardgame-ssvc
 spec:
   selector:
-    app: boardgame
+    app: taskmanager
   ports:
     - protocol: "TCP"
       port: 80
